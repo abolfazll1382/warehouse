@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/transfer/models.py
+
 from django.conf import settings
 from django.db import models
 

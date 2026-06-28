@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/inventory/models.py
+
 from django.db import models
 
 from django.conf import settings
@@ -21,6 +23,10 @@ class Inventory(models.Model):
 
     quantity = models.PositiveIntegerField(
         default=0,
+    )
+
+    minimum_quantity = models.PositiveIntegerField(
+    default=0,
     )
 
     created_at = models.DateTimeField(

@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/purchasing/services/receive.py
+
 from django.db import transaction
 from django.core.exceptions import ValidationError
 
@@ -12,16 +14,30 @@ from purchasing.models import (
     PurchaseOrder,
 )
 
+from warehouses.models import Warehouse
+
 
 @transaction.atomic
 def receive_purchase_order(
     purchase_order,
-    warehouse,
+    warehouse_id,
     performed_by,
 ):
-    if purchase_order.status == PurchaseOrder.Status.RECEIVED:
+
+    warehouse = Warehouse.objects.get(id=warehouse_id)
+
+    if purchase_order.status == (
+        PurchaseOrder.Status.RECEIVED
+    ):
         raise ValidationError(
             "Purchase order already received."
+        )
+
+    if purchase_order.status != (
+        PurchaseOrder.Status.APPROVED
+    ):
+        raise ValidationError(
+            "Purchase order must be approved first."
         )
 
     for item in purchase_order.items.all():
@@ -29,9 +45,7 @@ def receive_purchase_order(
         inventory, _ = Inventory.objects.get_or_create(
             warehouse=warehouse,
             product=item.product,
-            defaults={
-                "quantity": 0,
-            },
+            defaults={"quantity": 0},
         )
 
         process_stock_movement(
@@ -42,12 +56,5 @@ def receive_purchase_order(
             notes=f"PO-{purchase_order.id}",
         )
 
-    purchase_order.status = (
-        PurchaseOrder.Status.RECEIVED
-    )
-
-    purchase_order.save(
-        update_fields=[
-            "status",
-        ]
-    )
+    purchase_order.status = PurchaseOrder.Status.RECEIVED
+    purchase_order.save(update_fields=["status"])

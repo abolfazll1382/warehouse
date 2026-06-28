@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/transfer/serializers/transfer.py
+
 from rest_framework import serializers
 
 from transfer.models import Transfer

@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/inventory/services/stock.py
+
 from django.db import transaction
 from django.core.exceptions import ValidationError
 

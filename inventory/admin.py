@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/inventory/admin.py
+
 from django.contrib import admin
 
 from inventory.models import Inventory, StockMovement

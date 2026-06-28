@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/warehouses/admin.py
+
 from django.contrib import admin
 
 from warehouses.models import Warehouse

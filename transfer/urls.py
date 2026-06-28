@@ -1,3 +1,5 @@
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/transfer/urls.py
+
 from rest_framework.routers import DefaultRouter
 
 from transfer.views.transfer import TransferViewSet

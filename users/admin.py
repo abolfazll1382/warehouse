@@ -1,3 +1,8 @@
-from django.contrib import admin
+# MY_DJANGO PROJECTS TRAINING/warehouse_erp/users/admin.py
 
-# Register your models here.
+from django.contrib import admin
+from users.models import Department, EmployeeProfile
+
+
+admin.site.register(Department)
+admin.site.register(EmployeeProfile)

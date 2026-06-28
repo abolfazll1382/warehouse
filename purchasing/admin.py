@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from purchasing.models import (
+from .models import(
     Supplier,
     PurchaseOrder,
     PurchaseOrderItem,

@@ -1,17 +1,29 @@
+version: "3.9"
+
 services:
-  postgres:
+  db:
     image: postgres:17
-
-    container_name: warehouse_postgres
-
-    env_file:
-      - .env
-
+    environment:
+      POSTGRES_DB: warehouse_db
+      POSTGRES_USER: warehouse_user
+      POSTGRES_PASSWORD: warehouse_password
     ports:
-      - "${POSTGRES_PORT}:5432"
-
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
 
 volumes:
   postgres_data:
