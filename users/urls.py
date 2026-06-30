@@ -27,7 +27,11 @@ from users.views.onboarding import (
 from users.views.group import GroupViewSet
 from users.views.user_group import UserGroupAssignView
 from users.views.permission import PermissionListView, UserPermissionAssignView
-from users.views.customer_auth import CustomerRegistrationView
+from users.views.customer_auth import (
+    CustomerRegistrationView,
+    VerifyEmailView,
+    ResendVerificationView,
+)
 
 
 router = DefaultRouter()
@@ -98,5 +102,17 @@ urlpatterns = [
         "register/",
         CustomerRegistrationView.as_view(),
         name="customer-register",
+    ),
+
+    path(
+        "verify/",
+        VerifyEmailView.as_view(),
+        name="customer-verify",
+    ),
+
+    path(
+        "resend/",
+        ResendVerificationView.as_view(),
+        name="customer-resend",
     ),
 ]
