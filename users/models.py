@@ -1,9 +1,49 @@
 # MY_DJANGO PROJECTS TRAINING/warehouse_erp/users/models.py
 
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
 from warehouses.models import Warehouse
+
+
+class User(AbstractUser):
+    """
+    Custom user model.
+
+    Every account is either a CUSTOMER (self-registers via the public
+    storefront) or an EMPLOYEE (provisioned by the CEO through onboarding).
+    Verification flags are set once the user proves ownership of their
+    email/phone (OTP flow).
+    """
+
+    class UserType(models.TextChoices):
+        CUSTOMER = "CUSTOMER", "Customer"
+        EMPLOYEE = "EMPLOYEE", "Employee"
+
+    # The default Django user.email is not unique; we need it unique so it
+    # can double as a contact channel for OTP and (later) login.
+    email = models.EmailField(unique=True)
+
+    phone = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        unique=True,
+    )
+
+    user_type = models.CharField(
+        max_length=10,
+        choices=UserType.choices,
+        default=UserType.CUSTOMER,
+    )
+
+    is_email_verified = models.BooleanField(default=False)
+    is_phone_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.username} ({self.user_type})"
+
 
 class Department(models.Model):
 
@@ -116,3 +156,43 @@ class CustomerProfile(models.Model):
 
     def __str__(self):
         return f"Customer: {self.user.username} - {self.company_name}"
+
+
+class VerificationCode(models.Model):
+    """
+    A one-time OTP used to prove a user owns their email (signup / reset).
+
+    The `code` is stored HASHED (never in plaintext) so a DB leak can't
+    reveal usable codes. Codes expire after OTP_EXPIRY_MINUTES and are
+    invalidated after OTP_MAX_ATTEMPTS wrong guesses.
+    """
+
+    class Purpose(models.TextChoices):
+        REGISTER = "REGISTER", "Registration"
+        RESET = "RESET", "Password reset"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="verification_codes",
+    )
+    purpose = models.CharField(
+        max_length=10,
+        choices=Purpose.choices,
+        default=Purpose.REGISTER,
+    )
+    # Hashed 6-digit code (uses django.contrib.auth.hashers.make_password).
+    code_hash = models.CharField(max_length=128)
+    attempts = models.PositiveIntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "purpose"]),
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} - {self.purpose} ({'used' if self.is_used else 'active'})"

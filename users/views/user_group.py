@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from django.contrib.auth import get_user_model
 
+from users.permissions import IsCEO
 from users.serializers.user_group import UserGroupSerializer
 
 
@@ -16,7 +17,10 @@ User = get_user_model()
 
 class UserGroupAssignView(GenericAPIView):
     serializer_class = UserGroupSerializer
-    permission_classes = [IsAuthenticated,]
+    # Only the CEO may assign groups to users. Previously this was
+    # [IsAuthenticated] only, which let ANY logged-in user (including
+    # customers) add the CEO group to themselves — full privilege escalation.
+    permission_classes = [IsAuthenticated, IsCEO]
 
     def get_object(self):
         return User.objects.get(pk=self.kwargs["pk"])
