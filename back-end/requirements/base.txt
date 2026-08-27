@@ -1,0 +1,20 @@
+# --- Core -------------------------------------------------------------
+Django>=5.2,<5.3
+djangorestframework>=3.16,<4.0
+psycopg[binary]>=3.2,<4.0
+django-environ>=0.11,<1.0
+
+# --- Auth / permissions -------------------------------------------------
+djangorestframework-simplejwt>=5.5,<6.0
+
+# --- API ergonomics: filtering, pagination is built into DRF, docs -----
+django-filter>=24.3
+drf-spectacular>=0.28
+
+# --- Cross-origin (Next.js frontend runs on a different origin) --------
+django-cors-headers>=4.4,<5.0
+
+# --- Async / background jobs -------------------------------------------
+celery>=5.4,<6.0
+django-celery-beat>=2.7
+redis>=5.0,<6.0
